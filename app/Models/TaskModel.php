@@ -37,7 +37,7 @@ class TaskModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'title'       => 'required|max_length[255]|is_unique[task.title]',
+        'title'       => 'required|max_length[255]|is_unique[tasks.title]',
         'description' => 'required',
         'status'      => 'required|in_list[pending,in progress,completed]',
         'responsible' => 'required|max_length[255]',
