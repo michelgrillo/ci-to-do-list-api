@@ -129,9 +129,8 @@ Content-Type: application/json
 
 `DELETE /api/tasks/1` deletes the task and returns the deleted ID.
 
-## Potential improvements with more time
+## Potential improvements
 
-- Align the allowed statuses with the database default (`pending` currently does not match the statuses accepted by the API).
 - Add authentication and authorization to protect tasks and scope them to users.
 - Publish an OpenAPI/Swagger specification and examples of error responses.
 - Expand the tests to cover filters, pagination, duplicates, and edge cases.
