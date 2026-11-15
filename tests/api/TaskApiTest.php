@@ -125,6 +125,27 @@ final class TaskApiTest extends CIUnitTestCase
         $this->assertNotEmpty($responseBody['messages']);
     }
 
+    public function testCreateRejectsDuplicateTaskTitles(): void
+    {
+        $task = [
+            'title'       => 'Unique API test task',
+            'description' => 'Created by the API test',
+            'status'      => 'open',
+            'responsible' => 'API tester',
+            'due_date'    => '2026-12-01',
+            'created_at'  => '2026-11-15 09:00:00',
+        ];
+
+        $this->withBodyFormat('json')->post('api/tasks', $task)->assertStatus(201);
+
+        $duplicate = $this->withBodyFormat('json')->post('api/tasks', $task);
+        $duplicate->assertStatus(400);
+
+        $responseBody = json_decode($duplicate->getJSON(), true);
+        $this->assertArrayHasKey('title', $responseBody['messages']);
+        $this->seeNumRecords(1, 'tasks', ['title' => $task['title']]);
+    }
+
     public function testUpdateRejectsInvalidDataWithStandardErrorEnvelope(): void
     {
         $response = $this->withBodyFormat('json')->put('api/tasks/1', [

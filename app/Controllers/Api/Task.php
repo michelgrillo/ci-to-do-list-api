@@ -88,7 +88,7 @@ class Task extends BaseController
         }
 
         $rules = [
-            'title'       => 'if_exist|required|string|max_length[255]',
+            'title'       => 'if_exist|required|string|max_length[255]|is_unique[tasks.title,id,{id}]',
             'description' => 'if_exist|permit_empty|string|max_length[1000]',
             'responsible' => 'if_exist|required|string|max_length[255]',
             'status'      => 'if_exist|required|in_list[open,in_progress,done]',
@@ -144,7 +144,7 @@ class Task extends BaseController
         }
 
         $rules = [
-            'title' => 'required|string|max_length[255]',
+            'title' => 'required|string|max_length[255]|is_unique[tasks.title,id,{id}]',
             'description' => 'permit_empty|max_length[1000]',
             'responsible' => 'required|string|max_length[255]',
             'status' => 'required|in_list[open,in_progress,done]',
