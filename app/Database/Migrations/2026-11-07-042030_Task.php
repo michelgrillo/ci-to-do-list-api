@@ -25,11 +25,11 @@ class Task extends Migration
                 'type' => 'TEXT',
                 'null' => true,
             ],
-            // status column for the task (pending, in progress, completed)
+            // status column for the task (open, in progress, done)
             'status' => [
                 'type' => 'VARCHAR',
                 'constraint' => '16',
-                'default' => 'pending',
+                'default' => 'open',
             ],
             // responsible person for the task
             'responsible' => [
