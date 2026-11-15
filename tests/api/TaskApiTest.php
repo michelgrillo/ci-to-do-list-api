@@ -120,6 +120,61 @@ final class TaskApiTest extends CIUnitTestCase
 
         $response->assertStatus(400);
         $responseBody = json_decode($response->getJSON(), true);
+        $this->assertSame(400, $responseBody['status']);
+        $this->assertSame(400, $responseBody['error']);
         $this->assertNotEmpty($responseBody['messages']);
+    }
+
+    public function testUpdateRejectsInvalidDataWithStandardErrorEnvelope(): void
+    {
+        $response = $this->withBodyFormat('json')->put('api/tasks/1', [
+            'status' => 'pending',
+        ]);
+
+        $response->assertStatus(400);
+        $responseBody = json_decode($response->getJSON(), true);
+        $this->assertSame(400, $responseBody['status']);
+        $this->assertSame(400, $responseBody['error']);
+        $this->assertArrayHasKey('status', $responseBody['messages']);
+    }
+
+    public function testUpdatingMissingTaskUsesStandardErrorEnvelope(): void
+    {
+        $response = $this->withBodyFormat('json')->put('api/tasks/999', [
+            'title' => 'Updated title',
+        ]);
+
+        $response->assertStatus(404);
+        $responseBody = json_decode($response->getJSON(), true);
+        $this->assertSame(404, $responseBody['status']);
+        $this->assertSame(404, $responseBody['error']);
+        $this->assertSame(['error' => 'Task not found'], $responseBody['messages']);
+    }
+
+    public function testUpdateRejectsEmptyAndReadOnlyFields(): void
+    {
+        $emptyResponse = $this->withBodyFormat('json')->put('api/tasks/1', []);
+        $emptyResponse->assertStatus(400);
+
+        $readOnlyResponse = $this->withBodyFormat('json')->put('api/tasks/1', [
+            'created_at' => '2026-11-15 09:00:00',
+        ]);
+        $readOnlyResponse->assertStatus(400);
+
+        $responseBody = json_decode($readOnlyResponse->getJSON(), true);
+        $this->assertSame(400, $responseBody['status']);
+        $this->assertSame(400, $responseBody['error']);
+        $this->assertArrayHasKey('created_at', $responseBody['messages']);
+    }
+
+    public function testMalformedJsonUsesStandardErrorEnvelope(): void
+    {
+        $response = $this->withBody('{')->put('api/tasks/1');
+
+        $response->assertStatus(400);
+        $responseBody = json_decode($response->getJSON(), true);
+        $this->assertSame(400, $responseBody['status']);
+        $this->assertSame(400, $responseBody['error']);
+        $this->assertArrayHasKey('body', $responseBody['messages']);
     }
 }
