@@ -129,6 +129,30 @@ Content-Type: application/json
 
 `DELETE /api/tasks/1` deletes the task and returns the deleted ID.
 
+## Design decisions
+
+- The application is a JSON REST API built with CodeIgniter 4. Routes delegate to a task controller, model, and transformer.
+- Tasks can be filtered by `status` and `responsible`; list results are paginated in groups of five.
+- Valid task statuses are `open`, `in_progress`, and `done`.
+- Task titles are unique. The model validates uniqueness for useful client feedback, while the database constraint protects stored data.
+- `PUT /api/tasks/{id}` supports partial updates for the editable task fields. The API validates the supplied fields and manages timestamps through the model.
+- API errors use CodeIgniter's standard JSON envelope (`status`, `error`, and `messages`). Validation failures return `400`, missing tasks return `404`, and unexpected database failures return a generic `500` response while details are logged server-side.
+- PHPUnit feature tests exercise the HTTP endpoints using the test database.
+
+## Development history
+
+The following commits capture the main implementation milestones:
+
+- `64842c9` and `7b1f87c` — connected the task API routes to the controller and added the controller and transformer.
+- `b53f9a5` and `8448fd4` — aligned task validation and status defaults.
+- `84643e9` and `aab764a` — configured PHPUnit and added CRUD and validation tests.
+- `92b434b` — improved API validation and error handling.
+- `530663b` — enforced unique task titles in model validation and added a duplicate-title test.
+
+## AI-assisted development
+
+An AI coding assistant was used to help review and implement API changes, draft this documentation, and create and run some PHPUnit tests. Test results were reviewed during development; run the full suite locally with `composer test`.
+
 ## Potential improvements
 
 - Add authentication and authorization to protect tasks and scope them to users.
